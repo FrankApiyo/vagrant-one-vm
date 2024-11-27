@@ -10,3 +10,12 @@
 ### Start and stop vagrant machine:
 - Start: `vagrant up`
 - Stop: `vagrant destroy`
+
+
+### Setting up node exporter
+```console
+python3 -m venv env
+source ./env/bin/activate
+ansible-galaxy install -r ansible/ansible-galaxy.yml
+ansible-playbook  -i ansible/hosts.ini -u vagrant ansible/playbook.yml
+```

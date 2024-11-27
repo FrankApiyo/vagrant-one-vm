@@ -1,0 +1,9 @@
+---
+- hosts: all
+  vars:
+    node_exporter_version: '1.8.2'
+    node_exporter_state: started
+    node_exporter_enabled: true
+  roles:
+    - role: geerlingguy.node_exporter
+      become: true
