@@ -1,0 +1,46 @@
+---
+- name: Install Nginx
+  ansible.builtin.package:
+    name: nginx
+    state: present
+  become: true
+
+- name: Configure Nginx for reverse proxy
+  ansible.builtin.template:
+    src: nginx_proxy.j2
+    dest: "{{ nginx_conf_path }}"
+    mode: "0644"
+  become: true
+
+- name: Enable Nginx site configuration
+  ansible.builtin.file:
+    src: "{{ nginx_conf_path }}"
+    dest: "{{ nginx_conf_link }}"
+    state: link
+  become: true
+
+- name: Remove default Nginx configuration if present
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  become: true
+
+- name: Test Nginx configuration
+  ansible.builtin.command:
+    cmd: nginx -t
+  register: nginx_test
+  changed_when: false
+  become: true
+
+- name: Restart Nginx to apply changes
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+  become: true
+
+# - name: Ensure the service on port 8000 is running (optional check)
+  #   ansible.builtin.command:
+#     cmd: lsof -i :{{ service_port }}
+  #   register: service_check
+  #   changed_when: false
+  #   become: true

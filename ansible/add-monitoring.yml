@@ -16,9 +16,11 @@
   ansible.builtin.copy:
     dest: /etc/monit/conf-enabled/test-api.monitrc
     content: |
-      set daemon 300
-        start delay 480
+      set daemon 60
+        with start delay 2000
       check host {{ service_name }} with address localhost
+        start program = "/bin/systemctl restart test-api"
+        stop program  = "/bin/systemctl stop test-api"
         if failed port {{ service_port }} protocol http then restart
         every 2 cycles
     owner: root
