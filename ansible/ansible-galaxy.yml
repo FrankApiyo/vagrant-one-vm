@@ -1,3 +1,5 @@
 ---
 roles:
   - geerlingguy.node_exporter
+  - geerlingguy.pip
+  - geerlingguy.docker
