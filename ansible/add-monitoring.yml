@@ -12,12 +12,15 @@
     enabled: true
   become: true
 
+- name: Pause for 24 minutes
+  pause:
+    seconds: 1440  # 24 minutes * 60 seconds
+
 - name: Configure monit to check HTTP service
   ansible.builtin.copy:
     dest: /etc/monit/conf-enabled/test-api.monitrc
     content: |
       set daemon 60
-        with start delay 2000
       check host {{ service_name }} with address localhost
         start program = "/bin/systemctl restart test-api"
         stop program  = "/bin/systemctl stop test-api"

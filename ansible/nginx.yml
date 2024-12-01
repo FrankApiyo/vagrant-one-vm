@@ -38,9 +38,9 @@
     state: restarted
   become: true
 
-# - name: Ensure the service on port 8000 is running (optional check)
-  #   ansible.builtin.command:
-#     cmd: lsof -i :{{ service_port }}
-  #   register: service_check
-  #   changed_when: false
-  #   become: true
+- name: Ensure the service on port 8000 is running (optional check)
+  ansible.builtin.command:
+    cmd: lsof -i :{{ service_port }}
+  register: service_check
+  changed_when: false
+  become: true
