@@ -1,0 +1,81 @@
+---
+- include_vars:
+    file: secret-config.yml
+
+- name: Print password
+  debug:
+    msg: "{{ postgres_password }}"
+
+- name: Ensure the user exists
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    home: "{{ user_home }}"
+    shell: /bin/bash
+    create_home: true
+  become: true
+
+- name: Add the user to the docker group
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    groups: docker
+    append: true
+  become: true
+
+- name: Ensure the directory exists
+  ansible.builtin.file:
+    path: "{{ local_checkout_path }}"
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '0755'
+  become: true
+
+- name: Checking out codebase
+  git:
+    accept_hostkey: "yes"
+    repo: https://github.com/FrankApiyo/django-test-api.git
+    dest: "{{ local_checkout_path }}"
+    version: "{{ git_branch }}"
+    depth: 1
+    clone: true
+  become: true
+  become_user: "{{ user_name }}"
+
+- name: Create .env file
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ local_checkout_path }}/.env"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '0644'
+  become: true
+  become_user: "{{ user_name }}"
+
+- name: Ensure app log file exists
+  ansible.builtin.file:
+    path: "{{ app_log_path }}"
+    state: touch
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '0755'
+  become: true
+
+- name: Create a systemd service file for Docker Compose
+  ansible.builtin.template:
+    src: docker-compose.service.j2
+    dest: /etc/systemd/system/{{ service_name }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Reload systemd daemon
+  ansible.builtin.command: systemctl daemon-reload
+  become: true
+
+- name: Enable and start the Docker Compose service
+  ansible.builtin.systemd:
+    name: "{{ service_name }}"
+    enabled: true
+    state: started
+  become: true

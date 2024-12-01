@@ -1,0 +1,21 @@
+[Unit]
+Description=Docker Compose Application
+After=docker.service
+Requires=docker.service
+
+[Service]
+User={{ user_name }}
+Group=docker
+WorkingDirectory={{ user_home }}
+ExecStart=/usr/bin/docker compose -f {{ docker_compose_file }} up
+ExecStop=/usr/bin/docker compose -f {{ docker_compose_file }} down
+Restart=always
+Environment="HOME={{ user_home}}" "USER={{ user_name }}"
+
+# Redirect output to /var/log/docker_compose_app.log
+StandardOutput=append:/var/log/docker_compose_app.log
+StandardError=append:/var/log/docker_compose_app.log
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,51 @@
+---
+- name: Install monit
+  ansible.builtin.apt:
+    name: monit
+    state: present
+  become: true
+
+- name: Ensure monit is running
+  ansible.builtin.systemd:
+    name: monit
+    state: started
+    enabled: true
+  become: true
+
+- name: Configure monit to check HTTP service
+  ansible.builtin.copy:
+    dest: /etc/monit/conf-enabled/test-api.monitrc
+    content: |
+      set daemon 300
+        start delay 480
+      check host {{ service_name }} with address localhost
+        if failed port {{ service_port }} protocol http then restart
+        every 2 cycles
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Add HTTPD configuration to Monit config
+  ansible.builtin.lineinfile:
+    path: /etc/monit/monitrc
+    line: "{{ item }}"
+    create: true
+    state: present
+  become: true
+  with_items:
+    - 'set httpd port 2812'
+    - '    allow 127.0.0.1  # Allow only localhost to connect'
+    # Check this manually with: vagrant status
+
+- name: Reload monit configuration
+  ansible.builtin.command:
+    cmd: monit reload
+  become: true
+
+- name: Start monit service (if not already running)
+  ansible.builtin.systemd:
+    name: monit
+    state: started
+    enabled: true
+  become: true

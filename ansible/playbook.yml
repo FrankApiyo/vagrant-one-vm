@@ -4,6 +4,22 @@
     node_exporter_version: '1.8.2'
     node_exporter_state: started
     node_exporter_enabled: true
+
+    user_name: test_api_user
+    user_home: "/home/{{ user_name }}"
+    local_checkout_path: "{{ user_home }}/app"
+    docker_compose_file: "{{ local_checkout_path }}/docker-compose.yml"
+    git_branch: "main"
+    app_log_path: /var/log/docker_compose_app.log
+    service_name: test-api
+    service_port: 8000
   roles:
     - role: geerlingguy.node_exporter
       become: true
+    - role: geerlingguy.pip
+      become: true
+    - role: geerlingguy.docker
+      become: true
+  post_tasks:
+    - include_tasks: install-app.yml
+    - include_tasks: add-monitoring.yml
