@@ -2,10 +2,6 @@
 - include_vars:
     file: secret-config.yml
 
-- name: Print password
-  debug:
-    msg: "{{ postgres_password }}"
-
 - name: Ensure the user exists
   ansible.builtin.user:
     name: "{{ user_name }}"
