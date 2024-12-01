@@ -23,6 +23,7 @@ Vagrant.configure("2") do |config|
     sudo apt-get update
     sudo apt-get install -y htop
     cat /vagrant_data/id_ed25519.pub >> /home/vagrant/.ssh/authorized_keys
+    sudo apt-get install acl
   SHELL
 end
 
