@@ -56,6 +56,14 @@
     mode: '0755'
   become: true
 
+- name: Create django settings file
+  ansible.builtin.template:
+    src: settings.py.j2
+    dest: "{{ local_checkout_path }}/users/settings.py"
+    mode: "0644"
+  become: true
+  become_user: "{{ user_name }}"
+
 - name: Create a systemd service file for Docker Compose
   ansible.builtin.template:
     src: docker-compose.service.j2
