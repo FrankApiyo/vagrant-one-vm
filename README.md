@@ -19,3 +19,8 @@ source ./env/bin/activate
 ansible-galaxy install -r ansible/ansible-galaxy.yml
 ansible-playbook  -i ansible/hosts.ini -u vagrant ansible/playbook.yml
 ```
+
+### copying an image to an S3 bucket:
+```bash
+aws s3 cp ~/Downloads/profile.jpeg s3://savannah-bucket/
+```
