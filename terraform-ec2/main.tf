@@ -28,6 +28,15 @@ resource "aws_instance" "ubuntu_vm" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
+
+  user_data = <<-EOL
+  #!/bin/bash -xe
+
+  sudo apt update
+  sudo apt upgrade --yes
+  sudo apt install -y acl htop
+  EOL
+
   network_interface {
     network_interface_id = aws_network_interface.user_api.id
     device_index         = 0
