@@ -3,6 +3,10 @@ server {
 
     server_name _;
 
+    location /app/static/ {
+        alias {{ local_checkout_path }}/static/;
+    }
+
     location / {
         proxy_pass http://localhost:{{ service_port }};
         proxy_set_header Host $host;
