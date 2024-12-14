@@ -139,6 +139,21 @@
   become: true
   become_user: "{{ user_name }}"
 
+- name: Run migrations
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - -it
+      - dev_users_api
+      - python
+      - manage.py
+      - migrate
+  args:
+    chdir: "{{ local_checkout_path }}"
+  become: true
+  become_user: "{{ user_name }}"
+
 - name: Docker compose down
   ansible.builtin.command:
     argv:
