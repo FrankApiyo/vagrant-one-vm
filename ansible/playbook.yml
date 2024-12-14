@@ -13,6 +13,7 @@
     app_log_path: /var/log/docker_compose_app.log
     service_name: test-api
     service_port: 8000
+    aws_s3_endpoint_url: "http://192.168.100.229:9000"
 
     nginx_conf_path: "/etc/nginx/sites-available/app_proxy"
     nginx_conf_link: "/etc/nginx/sites-enabled/app_proxy"
