@@ -26,6 +26,17 @@
     mode: '0755'
   become: true
 
+- name: Git stash
+  ansible.builtin.command:
+    argv:
+      - git
+      - stash
+  args:
+    chdir: "{{ local_checkout_path }}"
+  become: true
+  become_user: "{{ user_name }}"
+  ignore_errors: true
+
 - name: Checking out codebase
   git:
     accept_hostkey: "yes"
@@ -36,6 +47,18 @@
     clone: true
   become: true
   become_user: "{{ user_name }}"
+
+- name: Git stash pop
+  ansible.builtin.command:
+    argv:
+      - git
+      - stash
+      - pop
+  args:
+    chdir: "{{ local_checkout_path }}"
+  become: true
+  become_user: "{{ user_name }}"
+  ignore_errors: true
 
 - name: Create .env file
   ansible.builtin.template:
@@ -76,6 +99,56 @@
 - name: Reload systemd daemon
   ansible.builtin.command: systemctl daemon-reload
   become: true
+
+- name: Docker compose build
+  ansible.builtin.command:
+    argv:
+      - docker
+      - compose
+      - build
+  args:
+    chdir: "{{ local_checkout_path }}"
+  become: true
+  become_user: "{{ user_name }}"
+
+- name: Docker compose run
+  ansible.builtin.command:
+    argv:
+      - docker
+      - compose
+      - up
+      - -d
+  args:
+    chdir: "{{ local_checkout_path }}"
+  become: true
+  become_user: "{{ user_name }}"
+
+- name: Django collectstatic
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - -it
+      - dev_users_api
+      - python
+      - manage.py
+      - collectstatic
+      - --noinput
+  args:
+    chdir: "{{ local_checkout_path }}"
+  become: true
+  become_user: "{{ user_name }}"
+
+- name: Docker compose down
+  ansible.builtin.command:
+    argv:
+      - docker
+      - compose
+      - down
+  args:
+    chdir: "{{ local_checkout_path }}"
+  become: true
+  become_user: "{{ user_name }}"
 
 - name: Enable and start the Docker Compose service
   ansible.builtin.systemd:

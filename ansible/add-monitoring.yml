@@ -12,10 +12,6 @@
     enabled: true
   become: true
 
-- name: Pause for 24 minutes
-  pause:
-    seconds: 1440  # 24 minutes * 60 seconds
-
 - name: Configure monit to check HTTP service
   ansible.builtin.copy:
     dest: /etc/monit/conf-enabled/test-api.monitrc
